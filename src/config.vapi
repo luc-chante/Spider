@@ -5,7 +5,7 @@ namespace Config {
         public const string BACKGROUND_DIR;
         public const string PACKAGE_DATA_DIR;
         public const string PACKAGE_LOCALE_DIR;
-        public const string PACKAGE_NAME = "luc.gtk.spider";
+        public const string PACKAGE_NAME;
         public const string PACKAGE_VERSION;
-        public const string VERSION = "1.0.1";
+        public const string VERSION;
 }

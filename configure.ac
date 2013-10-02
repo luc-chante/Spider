@@ -19,7 +19,7 @@ dnl Check for vala
 AM_PROG_VALAC([0.10.0])
 
 
-PKG_CHECK_MODULES(SPIDER, [gtk+-3.0 gtksourceview-3.0 libsoup-2.4 glib-2.0])
+PKG_CHECK_MODULES(SPIDER, [gtk+-3.0 gtksourceview-3.0 libsoup-2.4 >= 2.42 glib-2.0 gee-0.8])
 
 
 AC_OUTPUT([

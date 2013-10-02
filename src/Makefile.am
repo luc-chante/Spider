@@ -22,8 +22,8 @@ bin_PROGRAMS = spider
 spider_SOURCES = \
 	spider.vala config.vapi spi-toolbar.vala spi-header-box.vala spi-window.vala spi-request-builder.vala
 
-spider_VALAFLAGS =  --pkg gtksourceview-3.0 --pkg sqlite3 --pkg libsoup-2.4 --pkg gee-0.8  \
-	--pkg gtk+-3.0 --target-glib=2.32
+spider_VALAFLAGS =  --pkg gtksourceview-3.0 --pkg libsoup-2.4 --pkg glib-2.0 --pkg gee-0.8  \
+	--pkg gtk+-3.0
 
 spider_LDFLAGS = \
 	-Wl,--export-dynamic
