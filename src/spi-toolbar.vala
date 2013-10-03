@@ -78,6 +78,12 @@ public class Spi.Toolbar : Gtk.Toolbar {
 	public void init () {
 		this.method_combo.active = 0;
 	}
+
+	public void set_cancel_enable (bool enable) {
+		this.cancel_button.set_state_flags (
+				enable ? Gtk.StateFlags.NORMAL : Gtk.StateFlags.INSENSITIVE,
+		        true);
+	}
 	
 	private void connect_signals () {
 		this.method_combo.changed.connect (() => {
@@ -101,15 +107,11 @@ public class Spi.Toolbar : Gtk.Toolbar {
 				this.location_changed (this.location_entry.get_text ());
 			}
 			this.notify_location_changed = false;
-			if (this.activate ()) {
-				this.cancel_button.set_state_flags (Gtk.StateFlags.NORMAL, true);
-			}
+			this.activate ();
 		});
 
 		this.cancel_action.activate.connect (() => {
-			if (this.cancel ()) {
-				this.cancel_button.set_state_flags (Gtk.StateFlags.INSENSITIVE, true);
-			}
+			this.cancel ();
 		});
 	}
 }

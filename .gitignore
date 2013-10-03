@@ -1,3 +1,4 @@
 .anjuta/
 .anjuta_sym_db.db
 src/*~
+src/*.[co]

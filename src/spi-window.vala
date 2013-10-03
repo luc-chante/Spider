@@ -90,6 +90,7 @@ public class Spi.Window : Gtk.ApplicationWindow {
 
 	private bool send () {
 		if (this.locker.trylock () && this.message == null) {
+			this.toolbar.set_cancel_enable (true);
 			this.message = new Soup.Message (this.builder.method, this.builder.url);
 			this.builder.foreach ((k, v) => {
 				unowned string key = (string) k;
@@ -105,6 +106,7 @@ public class Spi.Window : Gtk.ApplicationWindow {
 
 	private bool cancel () {
 		if (this.locker.trylock () && this.message != null) {
+			this.toolbar.set_cancel_enable (false);
 			this.session.cancel_message (this.message, (uint)Soup.KnownStatusCode.CANCELLED);
 			this.message = null;
 			this.locker.unlock ();
@@ -115,6 +117,7 @@ public class Spi.Window : Gtk.ApplicationWindow {
 	}
 
 	private void receive (Soup.Session session, Soup.Message msg) {
+		this.toolbar.set_cancel_enable (false);
 		var iter = Gtk.TextIter ();
 		string type = "html";
 		StringBuilder sb = new StringBuilder.sized (1024);
@@ -133,8 +136,13 @@ public class Spi.Window : Gtk.ApplicationWindow {
 
 		var b = this.response_body.buffer as Gtk.SourceBuffer;
 		if (type.has_prefix ("text/")) {
+			type = type.substring (5);
+			var pos = type.index_of_char (';');
+			if (pos > -1) {
+				type = type.substring (0, pos);
+			}
 			var lm = Gtk.SourceLanguageManager.get_default ();
-			var l = lm.get_language (type.substring (5));
+			var l = lm.get_language (type);
 			b.set_language (l);
 			b.set_highlight_syntax (l != null);
 		}
