@@ -119,7 +119,7 @@ public class Spi.Window : Gtk.ApplicationWindow {
 	private void receive (Soup.Session session, Soup.Message msg) {
 		this.toolbar.set_cancel_enable (false);
 		var iter = Gtk.TextIter ();
-		string type = "html";
+		string type = null;
 		StringBuilder sb = new StringBuilder.sized (1024);
 		
 		sb.assign ("HTTP/1.").append_printf ("%d %u %s", msg.http_version, msg.status_code, msg.reason_phrase);		
@@ -135,19 +135,15 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		});
 
 		var b = this.response_body.buffer as Gtk.SourceBuffer;
-		if (type.has_prefix ("text/")) {
-			type = type.substring (5);
-			var pos = type.index_of_char (';');
-			if (pos > -1) {
-				type = type.substring (0, pos);
-			}
-			var lm = Gtk.SourceLanguageManager.get_default ();
-			var l = lm.get_language (type);
-			b.set_language (l);
-			b.set_highlight_syntax (l != null);
+		
+		if (type == null) {
+			b.set_language (null);
 		}
 		else {
-			b.set_language (null);
+			var lm = Gtk.SourceLanguageManager.get_default ();
+			var l = lm.guess_language (null, type);
+			b.set_language (l);
+			b.set_highlight_syntax (l != null);
 		}
 
 		this.response_body.buffer.text = (string)msg.response_body.data;
