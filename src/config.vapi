@@ -7,5 +7,6 @@ namespace Config {
         public const string PACKAGE_LOCALE_DIR;
         public const string PACKAGE_NAME;
         public const string PACKAGE_VERSION;
+		public const string PACKAGE_URL;
         public const string VERSION;
 }

@@ -26,6 +26,10 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		        hide_titlebar_when_maximized: true);
 		this.set_default_size (750, 900);
 
+		var about_action = new SimpleAction ("about", null);
+		about_action.activate.connect (this.on_about);
+		this.add_action (about_action);
+		
 		this.locker = Mutex ();
 			
 		this.builder = new Spi.RequestBuilder ();
@@ -154,5 +158,19 @@ public class Spi.Window : Gtk.ApplicationWindow {
 
 		this.response_body.buffer.text = (string)msg.response_body.data;
 		this.message = null;
+	}
+
+	private void on_about (SimpleAction simple, Variant? parameter) {
+        Gtk.show_about_dialog(this,
+            "program-name", "Spider",
+            "authors", SpiderApp.AUTHORS,
+            "copyright", SpiderApp.COPYRIGHT,
+            "license", SpiderApp.LICENSE,
+            "version", SpiderApp.VERSION,
+            "website", SpiderApp.WEBSITE,
+            "website-label", SpiderApp.WEBSITE_LABEL,
+            "comments", SpiderApp.COMMENTS,
+            "title", "About Spider"
+        );
 	}
 }
