@@ -10,7 +10,7 @@ spiderdoc_DATA = \
 	AUTHORS\
 	ChangeLog\
 	INSTALL\
-	NEWS
+	NEWS.md
 
 
 EXTRA_DIST = $(spiderdoc_DATA)

@@ -1,6 +1,0 @@
-Spider 0.1.0 beta - 02 October 2013
-===================================
-
- * Initial release
-   - No extra feature for now
-   - Bug with stop button (always enable even if the request is finished)
