@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Created by Anjuta application wizard.
 
-AC_INIT(org.luc.spider, 0.1.9, https://github.com/luc-chante/Spider/issues, spider, https://github.com/luc-chante/Spider)
+AC_INIT(org.luc.spider, 1.0.0, https://github.com/luc-chante/Spider/issues, spider, https://github.com/luc-chante/Spider)
 
 AC_CONFIG_HEADERS([config.h])
 
