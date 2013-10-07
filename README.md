@@ -5,7 +5,7 @@ Description
 ----------
 
 Spider is a gnome developer tool for debugging HTTP services building
-graphically complex requests and display raw result
+graphically complex requests and displaying raw result
 
 Installation & Licensing
 ---------------------
