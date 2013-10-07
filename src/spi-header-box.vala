@@ -117,12 +117,12 @@ public class Spi.HeaderBox : Gtk.Box {
 
 		private void connect_signals (Spi.HeaderBox parent) {
 			this.label.changed.connect (() => {
-				this.actions.set_sensitive (this.label.active >= 0
-						&& this.value.text_length > 0);
+				this.actions.set_sensitive (this.value.text_length > 0
+						&& this.label.get_active_text ().length >= 0);
 			});
 			this.value.changed.connect (() => {
-				this.actions.set_sensitive (this.label.active >= 0
-						&& this.value.text_length > 0);
+				this.actions.set_sensitive (this.value.text_length > 0
+						&& this.label.get_active_text ().length >= 0);
 			});
 			this.add_action.activate.connect (() => {
 				parent.prepend_header (this);

@@ -10,7 +10,7 @@ public class Spi.Window : Gtk.ApplicationWindow {
 	private Spi.Toolbar toolbar;
 	private Spi.HeaderBox headers;
 	private Gtk.TextView body;
-	private Gtk.TextView response_header;
+	private Gtk.SourceView response_header;
 	private Gtk.SourceView response_body;
 
 	private Spi.RequestBuilder builder;
@@ -45,16 +45,17 @@ public class Spi.Window : Gtk.ApplicationWindow {
 
 		container.add (new Gtk.Label ("Response"));
 
-		this.response_header = new Gtk.TextView ();
+		var lm = Gtk.SourceLanguageManager.get_default ();
+		var l = lm.get_language ("ini");
+		var b = new Gtk.SourceBuffer.with_language (l);
+		this.response_header = new Gtk.SourceView.with_buffer (b);
 		this.response_header.set_editable (false);
 		var sw = new Gtk.ScrolledWindow (null, null);
 		sw.add (this.response_header);
 		sw.vscrollbar_policy = Gtk.PolicyType.NEVER;
 		container.add (sw);
 
-		var lm = Gtk.SourceLanguageManager.get_default ();
-		var l = lm.get_language ("html");
-		var b = new Gtk.SourceBuffer.with_language (l);
+		b = new Gtk.SourceBuffer (null);
 		this.response_body = new Gtk.SourceView.with_buffer (b);
 		this.response_body.set_editable (false);
 		sw = new Gtk.ScrolledWindow (null, null);
@@ -127,7 +128,12 @@ public class Spi.Window : Gtk.ApplicationWindow {
 
 		msg.response_headers.foreach ((k, v) => {
 			if (k.ascii_casecmp ("content-type") == 0) {
-				type = v;
+				if (v.index_of_char (';') > -1) {
+					type = v.substring (0, v.index_of_char (';'));
+				}
+				else {
+					type = v;
+				}
 			}
 			sb.assign ("\n").append_printf ("%s: %s", k, v);
 			this.response_header.buffer.get_end_iter (out iter);
