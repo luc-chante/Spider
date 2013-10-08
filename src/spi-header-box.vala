@@ -57,9 +57,9 @@ public class Spi.HeaderBox : Gtk.Box {
 			"Transfer-Encoding", "Upgrade", "User-Agent", "Via", "Warning"
 		};
 
-		internal Gtk.ComboBoxText label;
-		internal Gtk.Entry value;
-		internal Gtk.Button actions;
+		internal Gtk.ComboBoxText label = new Gtk.ComboBoxText.with_entry ();
+		internal Gtk.Entry value = new Gtk.Entry ();
+		internal Gtk.Button actions = new Gtk.Button ();
 
 		internal Gtk.Action add_action;
 		internal Gtk.Action del_action;
@@ -70,7 +70,6 @@ public class Spi.HeaderBox : Gtk.Box {
 			Gtk.SizeGroup size_group = new Gtk.SizeGroup (Gtk.SizeGroupMode.VERTICAL);
 		
 			// Header label combobox
-			this.label = new Gtk.ComboBoxText.with_entry ();
 			var entry = this.label.get_child () as Gtk.Entry;
 			var completion = new Gtk.EntryCompletion ();
 			entry.set_completion (completion);
@@ -86,7 +85,6 @@ public class Spi.HeaderBox : Gtk.Box {
 			this.add (this.label);
 
 			// Header value entry
-			this.value = new Gtk.Entry ();
 			this.value.set_placeholder_text ("value");
 			this.add (this.value);
 			this.child_set_property (this.value, "expand", true);
@@ -101,7 +99,6 @@ public class Spi.HeaderBox : Gtk.Box {
 			//this.del_action.activate.connect (this.del_current_header);
 
 			// Header Add/Del button action
-			this.actions = new Gtk.Button ();
 			this.actions.set_image (new Gtk.Image ());
 			this.actions.set_related_action (this.add_action);
 			this.actions.set_label (null);

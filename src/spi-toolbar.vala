@@ -16,9 +16,9 @@ public class Spi.Toolbar : Gtk.Toolbar {
 	// Raised when cancel button pressed;
 	public signal bool cancel ();
 
-	private Gtk.ComboBoxText method_combo;
-	private Gtk.Entry location_entry;
-	private Gtk.Button cancel_button;
+	private Gtk.ComboBoxText method_combo = new Gtk.ComboBoxText ();
+	private Gtk.Entry location_entry = new Gtk.Entry ();
+	private Gtk.Button cancel_button = new Gtk.Button ();
 	private Gtk.Action cancel_action;
 
 	private bool notify_location_changed = true;
@@ -32,7 +32,6 @@ public class Spi.Toolbar : Gtk.Toolbar {
 		Gtk.SizeGroup size_group = new Gtk.SizeGroup (Gtk.SizeGroupMode.VERTICAL);
 
 		// ComboBox
-		this.method_combo = new Gtk.ComboBoxText ();
 		this.method_combo.append_text ("GET");
 		this.method_combo.append_text ("POST");
 		item = new Gtk.ToolItem ();
@@ -45,12 +44,11 @@ public class Spi.Toolbar : Gtk.Toolbar {
 		this.add (item);
 		
 		// Location
-		this.location_entry = new Gtk.Entry ();
 		this.location_entry.set_placeholder_text ("http://localhost/");
 
 		this.cancel_action = new Gtk.Action ("StopAction", "Stop", "Stop current data transfert", null);
 		this.cancel_action.set_icon_name ("process-stop-symbolic");
-		this.cancel_button = new Gtk.Button ();
+
 		this.cancel_button.set_image (new Gtk.Image ());
 		this.cancel_button.set_related_action (this.cancel_action);
 		this.cancel_button.set_label (null);
