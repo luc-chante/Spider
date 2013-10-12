@@ -7,8 +7,10 @@
 
 public class Spi.Window : Gtk.ApplicationWindow {
 
+	public signal void reset ();
+	
 	private Spi.Toolbar toolbar = new Spi.Toolbar ();
-	private Spi.HeaderBox headers = new Spi.HeaderBox ();
+	private Spi.Header.HeaderList headers = new Spi.Header.HeaderList ();
 	private Gtk.TextView body = new Gtk.TextView ();
 	private Gtk.SourceView response_header;
 	private Gtk.SourceView response_body = new Gtk.SourceView ();
@@ -36,12 +38,12 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		var l = lm.get_language ("ini");
 		var b = new Gtk.SourceBuffer.with_language (l);
 		this.response_header = new Gtk.SourceView.with_buffer (b);
-		this.response_header.set_editable (false);
+		this.response_header.editable = false;
 		var sw1 = new Gtk.ScrolledWindow (null, null);
 		sw1.add (this.response_header);
 		sw1.vscrollbar_policy = Gtk.PolicyType.NEVER;
 
-		this.response_body.set_editable (false);
+		this.response_body.editable = false;
 		var sw2 = new Gtk.ScrolledWindow (null, null);
 		sw2.add (this.response_body);
 
@@ -58,18 +60,16 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		this.connect_signals ();
 
 		this.session.add_feature_by_type (typeof (Soup.ProxyResolverDefault));
-
-		this.toolbar.init ();
 	}
 
 	private void connect_signals () {
 		this.toolbar.method_changed.connect (this.builder.update_method);
 		this.toolbar.method_changed.connect ((method) => {
 			if (method == "GET") {
-				this.body.set_visible (false);
+				this.body.visible = false;
 			}
 			else {
-				this.body.set_visible (true);
+				this.body.visible = true;
 			}
 		});
 		this.toolbar.location_changed.connect (this.builder.update_url);
@@ -77,6 +77,15 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		this.headers.header_removed.connect (this.builder.del_header);
 		this.toolbar.activate.connect (this.send);
 		this.toolbar.cancel.connect (this.cancel);
+
+		this.show.connect (() => {
+			this.builder.reset ();
+			this.toolbar.reset ();
+			this.headers.reset ();
+			this.body.buffer.text = "";
+			this.response_header.buffer.text = "";
+			this.response_body.buffer.text = "";
+		});
 	}
 
 	private bool send () {

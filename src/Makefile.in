@@ -81,8 +81,8 @@ host_triplet = @host@
 bin_PROGRAMS = spider$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am spider.c \
-	spi-toolbar.c spi-header-box.c spi-window.c \
-	spi-request-builder.c $(top_srcdir)/depcomp \
+	spi-toolbar.c spi-window.c spi-request-builder.c \
+	spi-date-time-picker.c spi-header.c $(top_srcdir)/depcomp \
 	$(srcdir)/spider_vala.stamp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -95,8 +95,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_spider_OBJECTS = spider.$(OBJEXT) spi-toolbar.$(OBJEXT) \
-	spi-header-box.$(OBJEXT) spi-window.$(OBJEXT) \
-	spi-request-builder.$(OBJEXT)
+	spi-window.$(OBJEXT) spi-request-builder.$(OBJEXT) \
+	spi-date-time-picker.$(OBJEXT) spi-header.$(OBJEXT)
 spider_OBJECTS = $(am_spider_OBJECTS)
 am__DEPENDENCIES_1 =
 spider_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -308,7 +308,7 @@ AM_CFLAGS = \
 	 -g
 
 spider_SOURCES = \
-	spider.vala config.vapi spi-toolbar.vala spi-header-box.vala spi-window.vala spi-request-builder.vala
+	spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala
 
 spider_VALAFLAGS = --pkg gtksourceview-3.0 --pkg libsoup-2.4 --pkg glib-2.0 --pkg gee-0.8  \
 	--pkg gtk+-3.0 --target-glib=2.32
@@ -412,7 +412,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-header-box.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-date-time-picker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-header.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-request-builder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-toolbar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-window.Po@am__quote@
@@ -448,11 +449,6 @@ $(srcdir)/spi-toolbar.c: $(srcdir)/spider_vala.stamp
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
 	fi
-$(srcdir)/spi-header-box.c: $(srcdir)/spider_vala.stamp
-	@if test -f $@; then :; else rm -f $(srcdir)/spider_vala.stamp; fi
-	@if test -f $@; then :; else \
-	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
-	fi
 $(srcdir)/spi-window.c: $(srcdir)/spider_vala.stamp
 	@if test -f $@; then :; else rm -f $(srcdir)/spider_vala.stamp; fi
 	@if test -f $@; then :; else \
@@ -463,9 +459,19 @@ $(srcdir)/spi-request-builder.c: $(srcdir)/spider_vala.stamp
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
 	fi
-$(srcdir)/spider_vala.stamp: spider.vala config.vapi spi-toolbar.vala spi-header-box.vala spi-window.vala spi-request-builder.vala
+$(srcdir)/spi-date-time-picker.c: $(srcdir)/spider_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/spider_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
+	fi
+$(srcdir)/spi-header.c: $(srcdir)/spider_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/spider_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
+	fi
+$(srcdir)/spider_vala.stamp: spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala
 	$(AM_V_at)rm -f $@ && echo stamp > $@-t
-	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(spider_VALAFLAGS) $(VALAFLAGS) -C spider.vala config.vapi spi-toolbar.vala spi-header-box.vala spi-window.vala spi-request-builder.vala
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(spider_VALAFLAGS) $(VALAFLAGS) -C spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala
 	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
@@ -593,13 +599,15 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-rm -f $(srcdir)/spi-header-box.c
+	-rm -f $(srcdir)/spi-date-time-picker.c
+	-rm -f $(srcdir)/spi-header.c
 	-rm -f $(srcdir)/spi-request-builder.c
 	-rm -f $(srcdir)/spi-toolbar.c
 	-rm -f $(srcdir)/spi-window.c
 	-rm -f $(srcdir)/spider.c
 	-rm -f $(srcdir)/spider_vala.stamp
-	-rm -f spi-header-box.c
+	-rm -f spi-date-time-picker.c
+	-rm -f spi-header.c
 	-rm -f spi-request-builder.c
 	-rm -f spi-toolbar.c
 	-rm -f spi-window.c

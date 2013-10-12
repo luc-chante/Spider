@@ -73,8 +73,9 @@ public class Spi.Toolbar : Gtk.Toolbar {
 		this.connect_signals ();
 	}
 
-	public void init () {
+	public void reset () {
 		this.method_combo.active = 0;
+		this.location_entry.text = "";
 	}
 
 	public void set_cancel_enable (bool enable) {

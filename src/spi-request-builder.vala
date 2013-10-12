@@ -16,6 +16,12 @@ public class Spi.RequestBuilder : Object {
 		this.headers = new Gee.HashSet<RequestBuilder.Header> (RequestBuilder.Header.hash, RequestBuilder.Header.equals);
 	}
 
+	public void reset () {
+		this.method = "";
+		this.url = "";
+		this.headers.clear ();
+	}
+
 	public void update_method (string method) {
 		this.method = method;
 	}
