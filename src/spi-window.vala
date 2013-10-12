@@ -7,18 +7,20 @@
 
 public class Spi.Window : Gtk.ApplicationWindow {
 
-	private Spi.Toolbar toolbar;
-	private Spi.HeaderBox headers;
-	private Gtk.TextView body;
+	public signal void reset ();
+	
+	private Spi.Toolbar toolbar = new Spi.Toolbar ();
+	private Spi.Header.HeaderList headers = new Spi.Header.HeaderList ();
+	private Gtk.TextView body = new Gtk.TextView ();
 	private Gtk.SourceView response_header;
-	private Gtk.SourceView response_body;
+	private Gtk.SourceView response_body = new Gtk.SourceView ();
 
-	private Spi.RequestBuilder builder;
+	private Spi.RequestBuilder builder = new Spi.RequestBuilder ();
 
-	private Soup.Session session;
-	private Soup.Message message;
+	private Soup.Session session = new Soup.Session ();
+	private Soup.Message message = null;
 
-	private Mutex locker;
+	private Mutex locker = Mutex ();
 	
 	// Constructor
 	public Window (Gtk.Application application) {
@@ -30,60 +32,44 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		about_action.activate.connect (this.on_about);
 		this.add_action (about_action);
 		
-		this.locker = Mutex ();
-			
-		this.builder = new Spi.RequestBuilder ();
-		
 		Gtk.Box container = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
-
-		this.toolbar = new Spi.Toolbar ();
-		container.add (this.toolbar);
-
-		container.add (new Gtk.Label ("Request"));
-		
-		this.headers = new Spi.HeaderBox ();
-		container.add (this.headers);
-
-		this.body = new Gtk.TextView ();
-		container.add (this.body);
-
-		container.add (new Gtk.Label ("Response"));
 
 		var lm = Gtk.SourceLanguageManager.get_default ();
 		var l = lm.get_language ("ini");
 		var b = new Gtk.SourceBuffer.with_language (l);
 		this.response_header = new Gtk.SourceView.with_buffer (b);
-		this.response_header.set_editable (false);
-		var sw = new Gtk.ScrolledWindow (null, null);
-		sw.add (this.response_header);
-		sw.vscrollbar_policy = Gtk.PolicyType.NEVER;
-		container.add (sw);
+		this.response_header.editable = false;
+		var sw1 = new Gtk.ScrolledWindow (null, null);
+		sw1.add (this.response_header);
+		sw1.vscrollbar_policy = Gtk.PolicyType.NEVER;
 
-		b = new Gtk.SourceBuffer (null);
-		this.response_body = new Gtk.SourceView.with_buffer (b);
-		this.response_body.set_editable (false);
-		sw = new Gtk.ScrolledWindow (null, null);
-		sw.add (this.response_body);
-		container.add (sw);
-		container.child_set_property (sw, "expand", true);
+		this.response_body.editable = false;
+		var sw2 = new Gtk.ScrolledWindow (null, null);
+		sw2.add (this.response_body);
+
+		container.add (this.toolbar);
+		container.add (new Gtk.Label ("Request"));
+		container.add (this.headers);
+		container.add (this.body);
+		container.add (new Gtk.Label ("Response"));
+		container.add (sw1);
+		container.add (sw2);
+		container.child_set_property (sw2, "expand", true);
 		
 		this.add(container);
 		this.connect_signals ();
 
-		this.session = new Soup.Session ();
 		this.session.add_feature_by_type (typeof (Soup.ProxyResolverDefault));
-
-		this.toolbar.init ();
 	}
 
 	private void connect_signals () {
 		this.toolbar.method_changed.connect (this.builder.update_method);
 		this.toolbar.method_changed.connect ((method) => {
 			if (method == "GET") {
-				this.body.set_visible (false);
+				this.body.visible = false;
 			}
 			else {
-				this.body.set_visible (true);
+				this.body.visible = true;
 			}
 		});
 		this.toolbar.location_changed.connect (this.builder.update_url);
@@ -91,6 +77,15 @@ public class Spi.Window : Gtk.ApplicationWindow {
 		this.headers.header_removed.connect (this.builder.del_header);
 		this.toolbar.activate.connect (this.send);
 		this.toolbar.cancel.connect (this.cancel);
+
+		this.show.connect (() => {
+			this.builder.reset ();
+			this.toolbar.reset ();
+			this.headers.reset ();
+			this.body.buffer.text = "";
+			this.response_header.buffer.text = "";
+			this.response_body.buffer.text = "";
+		});
 	}
 
 	private bool send () {
