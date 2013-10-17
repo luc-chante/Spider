@@ -6,32 +6,6 @@
  */
 
 namespace Spi.Header {
-	
-	private const string[] HEADERS = {
-			"Accept", "Accept-Charset", "Accept-Encoding", "Accept-Language",
-			"Allow", "Authorization", "Cache-Control", "Connection",
-			"Content-Encoding", "Content-Language", "Content-Length",
-			"Content-Location", "Content-MD5", "Content-Range", "Content-Type",
-			"Date", "Expect", "Expires", "From", "Host", "If-Match",
-			"If-Modified-Since", "If-None-Match", "If-Range",
-			"If-Unmodified-Since", "Last-Modified", "Max-Forwards", "Pragma",
-			"Proxy-Authorization", "Range", "Referer", "TE", "Trailer",
-			"Transfer-Encoding", "Upgrade", "User-Agent", "Via", "Warning"
-	};
-
-	internal class HeaderCompletion : Gtk.EntryCompletion {
-		internal HeaderCompletion () {
-			Gtk.ListStore list_store = new Gtk.ListStore (1, typeof (string));
-			this.set_model (list_store);
-			this.set_text_column (0);
-			Gtk.TreeIter iter;
-			
-			foreach (string h in HEADERS) {
-				list_store.append (out iter);
-				list_store.set (iter, 0, h);
-			}
-		}
-	}
 
 	public class HeaderList : Gtk.Box {
 
@@ -84,11 +58,11 @@ namespace Spi.Header {
 		internal signal void del_header (Spi.Header.Widget widget);
 
 		public string label {
-			get { return this.labelWidget.get_active_text (); }
+			get { return this.labelWidget.active_id; }
 			private set {}
 		}
 		public string value {
-			get { return this.valueWidget.get_value (); }
+			get { return this.valueWidget.text; }
 			private set {}
 		}
 		private bool _sensitive = true;
@@ -97,46 +71,56 @@ namespace Spi.Header {
 			set { this.internal_set_sensitive (value); }
 		}
 		
-		private Gtk.ComboBoxText labelWidget = new Gtk.ComboBoxText.with_entry ();
-		private Spi.Header.Value valueWidget;
+		private Spi.Header.LabelWidget labelWidget = new Spi.Header.LabelWidget ();
+		private Gtk.Entry valueWidget = new Gtk.Entry ();
 		private Gtk.Button actions = new Gtk.Button ();
 		private ulong click_handler = 0;
+		private ulong completion_handler = 0;
 		
 		internal Widget () {
 			Object (orientation: Gtk.Orientation.HORIZONTAL, spacing: 4);
 
-			var completion = new HeaderCompletion ();
-			completion.match_selected.connect ((model, iter) => {
-				GLib.Value v;
-				model.get_value (iter, 0, out v);
-				this.labelWidget.active_id = v.get_string ();
-				return true;
-			});
-			(this.labelWidget.get_child () as Gtk.Entry).completion = completion;
-			foreach (string h in HEADERS) {
-				this.labelWidget.append (h, h);
-			}
 			this.labelWidget.changed.connect (() => {
-				if (this.labelWidget.get_active_text ().length > 0
-						&& this.valueWidget.get_value ().length > 0) {
+				if (this.labelWidget.active_id != null
+						&& this.labelWidget.active_id.length > 0
+						&& this.valueWidget.text.length > 0) {
 					this.actions.sensitive = true;
 				}
 				else {
 					this.actions.sensitive = false;
 				}
 			});
+			this.labelWidget.on_header_selected.connect ((completion) => {
+				if (this.completion_handler > 0) {
+					this.valueWidget.completion.disconnect (this.completion_handler);
+					this.completion_handler = 0;
+				}
+				if (completion == null) {
+					this.valueWidget.completion = null;
+					this.valueWidget.placeholder_text = "Header Value";
+				}
+				else {
+					this.valueWidget.completion = completion;
+					this.completion_handler = completion.match_selected.connect ((model, iter) => {
+						Value v;
+						model.get_value (iter, 0, out v);
+						this.valueWidget.text = v.get_string ();
+						return true;
+					});
+					this.valueWidget.placeholder_text = completion.placeholder_text;
+				}
+			});
 
-			this.valueWidget = new SimpleValue ();
-			this.valueWidget.on_changed.connect ((v) => {
-				if (this.labelWidget.get_active_text ().length > 0
-						&& this.valueWidget.get_value ().length > 0) {
+			this.valueWidget.changed.connect ((v) => {
+				if (this.labelWidget.active_id != null
+						&& this.labelWidget.active_id.length > 0
+						&& this.valueWidget.text.length > 0) {
 					this.actions.sensitive = true;
 				}
 				else {
 					this.actions.sensitive = false;
 				}
 			});
-
 			this.click_handler = this.actions.clicked.connect (this.add_header_event);
 			this.actions.image = new Gtk.Image.from_icon_name (
 						"list-add-symbolic", Gtk.IconSize.SMALL_TOOLBAR);
@@ -144,6 +128,7 @@ namespace Spi.Header {
 
 			this.add (this.labelWidget);
 			this.add (this.valueWidget);
+			this.child_set_property (this.valueWidget, "expand", true);
 			this.add (this.actions);
 		}
 
@@ -166,8 +151,9 @@ namespace Spi.Header {
 				this.valueWidget.sensitive = false;
 				this.actions.sensitive = true;
 			}
-			else if (this.labelWidget.get_active_text ().length > 0
-					&& this.valueWidget.get_value ().length > 0) {
+			else if (this.labelWidget.active_id != null
+						&& this.labelWidget.active_id.length > 0
+					&& this.valueWidget.text.length > 0) {
 				this.actions.sensitive = true;
 			}
 			else {
@@ -175,25 +161,4 @@ namespace Spi.Header {
 			}
 		}
 	}
-	
-	internal interface Value : Gtk.Widget {
-		internal signal void on_changed (string value);
-		internal abstract unowned string get_value ();
-	}
-	
-	internal class SimpleValue : Gtk.Entry, Value {
-		
-		internal SimpleValue () {
-			Object (placeholder_text: "Value", hexpand: true);
-
-			this.changed.connect (() => {
-				this.on_changed (this.text);
-			});
-		}
-
-		internal unowned string get_value () {
-			return this.text;
-		}
-	}
-	
 }

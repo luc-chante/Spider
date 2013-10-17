@@ -82,7 +82,8 @@ bin_PROGRAMS = spider$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am spider.c \
 	spi-toolbar.c spi-window.c spi-request-builder.c \
-	spi-date-time-picker.c spi-header.c $(top_srcdir)/depcomp \
+	spi-date-time-picker.c spi-header.c spi-header-values.c \
+	spi-header-label-widget.c $(top_srcdir)/depcomp \
 	$(srcdir)/spider_vala.stamp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -96,7 +97,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_spider_OBJECTS = spider.$(OBJEXT) spi-toolbar.$(OBJEXT) \
 	spi-window.$(OBJEXT) spi-request-builder.$(OBJEXT) \
-	spi-date-time-picker.$(OBJEXT) spi-header.$(OBJEXT)
+	spi-date-time-picker.$(OBJEXT) spi-header.$(OBJEXT) \
+	spi-header-values.$(OBJEXT) spi-header-label-widget.$(OBJEXT)
 spider_OBJECTS = $(am_spider_OBJECTS)
 am__DEPENDENCIES_1 =
 spider_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -308,7 +310,7 @@ AM_CFLAGS = \
 	 -g
 
 spider_SOURCES = \
-	spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala
+	spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala spi-header-values.vala spi-header-label-widget.vala
 
 spider_VALAFLAGS = --pkg gtksourceview-3.0 --pkg libsoup-2.4 --pkg glib-2.0 --pkg gee-0.8  \
 	--pkg gtk+-3.0 --target-glib=2.32
@@ -413,6 +415,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-date-time-picker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-header-label-widget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-header-values.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-header.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-request-builder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spi-toolbar.Po@am__quote@
@@ -469,9 +473,19 @@ $(srcdir)/spi-header.c: $(srcdir)/spider_vala.stamp
 	@if test -f $@; then :; else \
 	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
 	fi
-$(srcdir)/spider_vala.stamp: spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala
+$(srcdir)/spi-header-values.c: $(srcdir)/spider_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/spider_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
+	fi
+$(srcdir)/spi-header-label-widget.c: $(srcdir)/spider_vala.stamp
+	@if test -f $@; then :; else rm -f $(srcdir)/spider_vala.stamp; fi
+	@if test -f $@; then :; else \
+	  $(MAKE) $(AM_MAKEFLAGS) $(srcdir)/spider_vala.stamp; \
+	fi
+$(srcdir)/spider_vala.stamp: spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala spi-header-values.vala spi-header-label-widget.vala
 	$(AM_V_at)rm -f $@ && echo stamp > $@-t
-	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(spider_VALAFLAGS) $(VALAFLAGS) -C spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala
+	$(AM_V_VALAC)$(am__cd) $(srcdir) && $(VALAC) $(spider_VALAFLAGS) $(VALAFLAGS) -C spider.vala config.vapi spi-toolbar.vala spi-window.vala spi-request-builder.vala spi-date-time-picker.vala spi-header.vala spi-header-values.vala spi-header-label-widget.vala
 	$(AM_V_at)mv -f $@-t $@
 
 mostlyclean-libtool:
@@ -600,6 +614,8 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f $(srcdir)/spi-date-time-picker.c
+	-rm -f $(srcdir)/spi-header-label-widget.c
+	-rm -f $(srcdir)/spi-header-values.c
 	-rm -f $(srcdir)/spi-header.c
 	-rm -f $(srcdir)/spi-request-builder.c
 	-rm -f $(srcdir)/spi-toolbar.c
@@ -607,6 +623,8 @@ maintainer-clean-generic:
 	-rm -f $(srcdir)/spider.c
 	-rm -f $(srcdir)/spider_vala.stamp
 	-rm -f spi-date-time-picker.c
+	-rm -f spi-header-label-widget.c
+	-rm -f spi-header-values.c
 	-rm -f spi-header.c
 	-rm -f spi-request-builder.c
 	-rm -f spi-toolbar.c
